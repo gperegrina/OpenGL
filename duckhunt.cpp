@@ -16,6 +16,8 @@
 #include <unistd.h> //for sleep function
 
 //800, 600
+//#define WINDOW_WIDTH  1920
+//#define WINDOW_HEIGHT 1080
 #define WINDOW_WIDTH  800
 #define WINDOW_HEIGHT 600
 
@@ -1622,10 +1624,12 @@ void render(Game *game)
 	glVertex2i(w, h);
 	glVertex2i(w, -h);
 	glEnd();
+	/*
 	if(!d && game->duckCount >= 10 && game->duckShot < 6)
-    {
+   	 {
         ggprint16(&r , 16, 0x00ffffff, "GAME OVER");
-    }
+    	}
+	*/
     //ggprint16(&r , 16, 0x00ffffff, "%i / 10", game->duckShot);
 	glPopMatrix();
 
@@ -1644,7 +1648,7 @@ void render(Game *game)
 	glVertex2i(w, h);
 	glVertex2i(w, -h);
 	glEnd();
-	//ggprint16(&r , 16, 0x00ffffff, "%i", game->score);
+	ggprint16(&r , 16, 0x00ffffff, "%i", game->score);
 	glPopMatrix();
 
 	glColor3ub(90, 140, 90);
