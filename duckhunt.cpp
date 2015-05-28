@@ -70,12 +70,22 @@ struct Shape {
 	Vec center;
 };
 
+
+
 //duck sprite
 typedef double Arr[3];
 struct Sprite {
 	Arr pos;
 	Arr vel;
 };
+
+
+extern void generateTexture(Ppmimage *bulletImage, GLuint *bulletTexture, Ppmimage *duckscoreImage, GLuint *duckscoreTexture
+		                        , Ppmimage *duckscoreImage2, GLuint *duckscoreTexture2, Ppmimage *duckImage, GLuint *duckTexture
+					, GLuint *duckSil);
+
+
+
 //First Duck Sprite
 Sprite duck_sprite;
 Ppmimage *duckImage=NULL;
@@ -107,6 +117,8 @@ int silhouette = 1;
 Sprite bullet_sprite;
 Ppmimage *bulletImage=NULL;
 GLuint bulletTexture;
+
+
 //White duck Sprite
 Sprite duckscore_sprite;
 Ppmimage *duckscoreImage=NULL;
@@ -330,6 +342,8 @@ void deleteDog(Game *game, Dog *dog);
 void deleteHappyDog(Game *game, happyDog *dog);  ////////////////////////////
 void deleteLaughingDog(Game *game, laughingDog *dog);  ///////////////////////////
 
+//extern void DisplayBullets(Game *game, Sprite bullet_sprite);
+
 void check_resize(XEvent *e);
 void init_sounds(void);
 
@@ -440,27 +454,8 @@ void reshape_window(int width, int height)
 	set_title();
 }
 
-unsigned char *buildAlphaData(Ppmimage *img) {
-	// add 4th component to RGB stream...
-	int a,b,c;
-	unsigned char *newdata, *ptr;
-	unsigned char *data = (unsigned char *)img->data;
-	//newdata = (unsigned char *)malloc(img->width * img->height * 4);
-	newdata = new unsigned char[img->width * img->height * 4];
-	ptr = newdata;
-	for (int i=0; i<img->width * img->height * 3; i+=3) {
-		a = *(data+0);
-		b = *(data+1);
-		c = *(data+2);
-		*(ptr+0) = a;
-		*(ptr+1) = b;
-		*(ptr+2) = c;
-		*(ptr+3) = (a|b|c);
-		ptr += 4;
-		data += 3;
-	}
-	return newdata;
-}
+extern unsigned char *buildAlphaData(Ppmimage *img);
+
 
 void init_opengl(void)
 {
@@ -483,8 +478,15 @@ void init_opengl(void)
 	backgroundTransImage = ppm6GetImage("./images/backgroundTrans.ppm");
 	gameoverbgImage = ppm6GetImage("./images/gameoverbg.ppm");
 	
+	
 
-
+	//glBindTexture(GL_TEXTURE_2D, 0);
+	
+	generateTexture(bulletImage, &bulletTexture, duckscoreImage, &duckscoreTexture
+		                        , duckscoreImage2, &duckscoreTexture2, duckImage, &duckTexture
+					, &duckSil);
+	
+/*
 	//-------------------------------------------------------------------
 	//bullet
 	glGenTextures(1, &bulletTexture);
@@ -497,7 +499,9 @@ void init_opengl(void)
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
 	glTexImage2D(GL_TEXTURE_2D, 0, 3, w1, h1, 0, GL_RGB, GL_UNSIGNED_BYTE, bulletImage->data);
 	//-------------------------------------------------------------------
-	
+
+
+
 	//-------------------------------------------------------------------
 	//White duck score sprite	
 	glGenTextures(1, &duckscoreTexture);
@@ -510,7 +514,9 @@ void init_opengl(void)
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
 	glTexImage2D(GL_TEXTURE_2D, 0, 3, w2, h2, 0, GL_RGB, GL_UNSIGNED_BYTE, duckscoreImage->data);
 	//-------------------------------------------------------------------
-	
+
+
+
 	//-------------------------------------------------------------------
 	//Red duck score sprite	
 	glGenTextures(1, &duckscoreTexture2);
@@ -523,6 +529,7 @@ void init_opengl(void)
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
 	glTexImage2D(GL_TEXTURE_2D, 0, 3, w3, h3, 0, GL_RGB, GL_UNSIGNED_BYTE, duckscoreImage2->data);
 	//-------------------------------------------------------------------
+
 	
 	//-------------------------------------------------------------------
 	//duck sprite
@@ -537,7 +544,7 @@ void init_opengl(void)
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
 	glTexImage2D(GL_TEXTURE_2D, 0, 3, w4, h4, 0, GL_RGB, GL_UNSIGNED_BYTE, duckImage->data);
 	//-------------------------------------------------------------------
-	
+*/	
 	//-------------------------------------------------------------------
 	//duck sprite 2
 	glGenTextures(1, &duckTexture2);
@@ -594,6 +601,7 @@ void init_opengl(void)
 	glTexImage2D(GL_TEXTURE_2D, 0, 3, w8, h8, 0, GL_RGB, GL_UNSIGNED_BYTE, duckImage5->data);
 	//-------------------------------------------------------------------
 
+/*
 	//-------------------------------------------------------------------
 	//duck silhouette 
 	glBindTexture(GL_TEXTURE_2D, duckSil);
@@ -605,7 +613,7 @@ void init_opengl(void)
 	GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
 	delete [] silhouetteData;
 	//-------------------------------------------------------------------
-	
+*/	
 	//-------------------------------------------------------------------
 	//duck silhouette 2 
 	glBindTexture(GL_TEXTURE_2D, duckSil2);
@@ -1443,7 +1451,7 @@ void render(Game *game)
 	Shape *s;
 
 	if (game->menutest == true) {
-       const char* text[3] = {"One Duck Hunt - Press 1", "Two Duct Hunt - Press 2", "        Exit - Press ESC"}; // the Text need fixing to look better.
+		const char* text[3] = {"One Duck Hunt - Press 1", "Two Duct Hunt - Press 2", "        Exit - Press ESC"};
 		for(int i=5; i<8; i++) {
 			glColor3ub(90, 140, 90);
 			s = &game->box[i];
@@ -1470,68 +1478,68 @@ void render(Game *game)
 		}
 	}
 
-
-
-
+//	void DisplayBullets(Game *game, Sprite bullet_sprite);
 	
-	//Displaying bullets
-	glColor3ub(90, 140, 90);
-	s = &game->box[0];
-	glPushMatrix();
-	glTranslatef(s->center.x, s->center.y, s->center.z);
-	w = s->width;
-	h = s->height;
-	int num = 0, dist = 0;
-	if (game->bullets == 3) {
-		num = 3, dist = 80;
-	}
-	if (game->bullets == 2) {
-		num = 2, dist = 60;
-	}
-	if (game->bullets == 1) {
-		num = 1, dist = 40;
-	}
-	if (game->bullets == 0) {
-		num = 0, dist = 0;
-	}
-	if (game->bullets != 0) {
-		for (int i=0;i<num;i++) {
-			bullet_sprite.pos[0] = dist - (i * 20);
-			bullet_sprite.pos[1] = 40;
-			bullet_sprite.pos[2] = 0;
-			float wid = 10.0f;
-			glPushMatrix();
-			glTranslatef(bullet_sprite.pos[0], bullet_sprite.pos[1], bullet_sprite.pos[2]);
-			glBindTexture(GL_TEXTURE_2D, bulletTexture);
-			glEnable(GL_ALPHA_TEST);
-			glAlphaFunc(GL_GREATER, 0.0f);
-			glColor4ub(255,255,255,255);
-			glBegin(GL_QUADS);
-			if (bullet_sprite.vel[0] > 0.0) {
-				glTexCoord2f(0.0f, 1.0f); glVertex2i(-wid,-wid);
-				glTexCoord2f(0.0f, 0.0f); glVertex2i(-wid, wid);
-				glTexCoord2f(1.0f, 0.0f); glVertex2i( wid, wid);
-				glTexCoord2f(1.0f, 1.0f); glVertex2i( wid,-wid);
-			} else {
-				glTexCoord2f(1.0f, 1.0f); glVertex2i(-wid,-wid);
-				glTexCoord2f(1.0f, 0.0f); glVertex2i(-wid, wid);
-				glTexCoord2f(0.0f, 0.0f); glVertex2i( wid, wid);
-				glTexCoord2f(0.0f, 1.0f); glVertex2i( wid,-wid);
-			}
-			glEnd();
-			glPopMatrix();
-			glDisable(GL_ALPHA_TEST);
-		}
-	}
-	r.bot = s->height;
-	r.left = s->width;
-	glVertex2i(-w, -h);
-	glVertex2i(-w, h);
-	glVertex2i(w, h);
-	glVertex2i(w, -h);
-	glEnd();
-	//ggprint16(&r , 16, 0x00ffffff, "%i", game->bullets);
-	glPopMatrix();
+	    //Displaying bullets
+	    glColor3ub(90, 140, 90);
+	    s = &game->box[0];
+	    glPushMatrix();
+	    glTranslatef(s->center.x, s->center.y, s->center.z);
+	    w = s->width;
+	    h = s->height;
+	    int num = 0, dist = 0;
+	    if (game->bullets == 3) {
+		    num = 3, dist = 80;
+	    }
+	    if (game->bullets == 2) {
+		    num = 2, dist = 60;
+	    }
+	    if (game->bullets == 1) {
+		    num = 1, dist = 40;
+	    }
+	    if (game->bullets == 0) {
+		    num = 0, dist = 0;
+	    }
+	    if (game->bullets != 0) {
+		    for (int i=0;i<num;i++) {
+			    bullet_sprite.pos[0] = dist - (i * 20);
+			    bullet_sprite.pos[1] = 40;
+			    bullet_sprite.pos[2] = 0;
+			    float wid = 10.0f;
+			    glPushMatrix();
+			    glTranslatef(bullet_sprite.pos[0], bullet_sprite.pos[1], bullet_sprite.pos[2]);
+			    glBindTexture(GL_TEXTURE_2D, bulletTexture);
+			    glEnable(GL_ALPHA_TEST);
+			    glAlphaFunc(GL_GREATER, 0.0f);
+			    glColor4ub(255,255,255,255);
+			    glBegin(GL_QUADS);
+			    if (bullet_sprite.vel[0] > 0.0) {
+				    glTexCoord2f(0.0f, 1.0f); glVertex2i(-wid,-wid);
+				    glTexCoord2f(0.0f, 0.0f); glVertex2i(-wid, wid);
+				    glTexCoord2f(1.0f, 0.0f); glVertex2i( wid, wid);
+				    glTexCoord2f(1.0f, 1.0f); glVertex2i( wid,-wid);
+			    } else {
+				    glTexCoord2f(1.0f, 1.0f); glVertex2i(-wid,-wid);
+				    glTexCoord2f(1.0f, 0.0f); glVertex2i(-wid, wid);
+				    glTexCoord2f(0.0f, 0.0f); glVertex2i( wid, wid);
+				    glTexCoord2f(0.0f, 1.0f); glVertex2i( wid,-wid);
+			    }
+			    glEnd();
+			    glPopMatrix();
+			    glDisable(GL_ALPHA_TEST);
+		    }
+	    }
+	    r.bot = s->height;
+	    r.left = s->width;
+	    glVertex2i(-w, -h);
+	    glVertex2i(-w, h);
+	    glVertex2i(w, h);
+	    glVertex2i(w, -h);
+	    glEnd();
+	    //ggprint16(&r , 16, 0x00ffffff, "%i", game->bullets);
+	    glPopMatrix();
+
+
 
 	//-------------------------------------------------------------------
 	//Displaying duck score sprites

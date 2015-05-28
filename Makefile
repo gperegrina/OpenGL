@@ -7,8 +7,8 @@ LFLAGS = $(LIB) -lrt -lX11 -lGLU -lGL -pthread -lm #-lXrandr
 
 all: duckhunt
 
-duckhunt: duckhunt.cpp
-	g++ $(CFLAGS) duckhunt.cpp ppm.cpp fmod.c -Wall -Wextra $(LFLAGS) -o duckhunt
+duckhunt: duckhunt.cpp gPeregrina.cpp
+	g++ $(CFLAGS) duckhunt.cpp gPeregrina.cpp ppm.cpp fmod.c -Wall -Wextra $(LFLAGS) -o duckhunt
 
 clean:
 	rm -f duckhunt
