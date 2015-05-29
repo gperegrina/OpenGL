@@ -144,12 +144,6 @@ Sprite dog_sprite3;
 Ppmimage *dogImage3=NULL;
 GLuint dogTexture3;
 GLuint dogSil3;
-
-//Third Dog Sprite
-Sprite dog_sprite4;
-Ppmimage *dogImage4=NULL;
-GLuint dogTexture4;
-GLuint dogSil4;
 int show_dog = 0;
 
 //White duck Sprite
@@ -524,32 +518,6 @@ void init_opengl(void)
 					, backgroundTransImage, &backgroundTransTexture, gameoverbgImage, &gameoverbgTexture
 					, dogImage1, &dogTexture1, &dogSil1, dogImage2, &dogTexture2, &dogSil2
 					, dogImage3, &dogTexture3, &dogSil3);
-//-------------------------------------------------------------------
-    //Dog sprite 3
-    glGenTextures(1, &dogTexture4);
-    glGenTextures(1, &dogSil4);
-    dogImage4 = ppm6GetImage("./images/duck.ppm");
-    int w10 = dogImage1->width;
-    int h10 = dogImage1->height;
-    glBindTexture(GL_TEXTURE_2D, dogTexture4);
-    //
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-    glTexImage2D(GL_TEXTURE_2D, 0, 3, w10, h10, 0, GL_RGB, GL_UNSIGNED_BYTE, dogImage4->data);
-    //-------------------------------------------------------------------
-
-    //-------------------------------------------------------------------
-    //Dog silhouette 1
-    glBindTexture(GL_TEXTURE_2D, dogSil4);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-    ////must build a new set of data...
-    unsigned char *silhouetteData6 = buildAlphaData(dogImage4);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w10, h10, 0,
-            GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData6);
-    delete [] silhouetteData6;
-    //-------------------------------------------------------------------
-	
 
 	glEnable(GL_TEXTURE_2D);
 	initialize_fonts();
@@ -1798,7 +1766,7 @@ void render(Game *game)
 			dog_sprite1.pos[1] = y;
 			dog_sprite1.pos[2] = s->center.z;
 			dogjumping = 1;	
-	/*		if(show_dog) {
+			if(show_dog) {
 				glPushMatrix();
 				glTranslatef(dog_sprite1.pos[0], dog_sprite1.pos[1], dog_sprite1.pos[2]);
 				glBindTexture(GL_TEXTURE_2D, dogTexture1); //test
@@ -1821,36 +1789,8 @@ void render(Game *game)
 				glEnd();
 				glPopMatrix();
 				glDisable(GL_ALPHA_TEST);
-	*/
-				if(dogjumping) {
-				    dog_sprite4.pos[0] = x;
-				    dog_sprite4.pos[1] = y;
-				    dog_sprite4.pos[2] = s->center.z;
-				
-				    glPushMatrix();
-				    glTranslatef(dog_sprite4.pos[0], dog_sprite4.pos[1], dog_sprite4.pos[2]);
-				    glBindTexture(GL_TEXTURE_2D, dogTexture1); //test
-					    glBindTexture(GL_TEXTURE_2D, dogSil4);
-					    glEnable(GL_ALPHA_TEST);
-					    glAlphaFunc(GL_GREATER, 0.0f);
-					    glColor4ub(255,255,255,255);
-				    glBegin(GL_QUADS);
-				    if (dog_sprite4.vel[0] > 0.0) {
-					    glTexCoord2f(0.0f, 1.0f); glVertex2i(-wid,-wid);
-					    glTexCoord2f(0.0f, 0.0f); glVertex2i(-wid, wid);
-					    glTexCoord2f(1.0f, 0.0f); glVertex2i( wid, wid);
-					    glTexCoord2f(1.0f, 1.0f); glVertex2i( wid,-wid);
-				    } else {
-					    glTexCoord2f(1.0f, 1.0f); glVertex2i(-wid,-wid);
-					    glTexCoord2f(1.0f, 0.0f); glVertex2i(-wid, wid);
-					    glTexCoord2f(0.0f, 0.0f); glVertex2i( wid, wid);
-					    glTexCoord2f(0.0f, 1.0f); glVertex2i( wid,-wid);
-				    }
-				    glEnd();
-				    glPopMatrix();
-				    glDisable(GL_ALPHA_TEST);
-				}
-		//	}
+	
+			}
 		}
 		
 		glColor3ub(100, 100, 255);
